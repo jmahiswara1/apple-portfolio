@@ -51,6 +51,7 @@ export const uiStrings = {
     backToCover: 'Back to cover',
     currentSlide: 'Current slide',
     of: 'of',
+    moreProjectsBtn: 'MORE PROJECT',
   },
   id: {
     candidateName: 'Nama Kandidat',
@@ -69,6 +70,7 @@ export const uiStrings = {
     backToCover: 'Kembali ke sampul',
     currentSlide: 'Slide saat ini',
     of: 'dari',
+    moreProjectsBtn: 'MORE PROJECT',
   },
 } as const
 

@@ -52,10 +52,15 @@ export function PortfolioDeck() {
     } catch {}
   }
 
-  const totalSlides = projects.length + 2
+  const totalSlides = projects.length + 3
 
   const slideIds = useMemo(
-    () => ['cover', 'biodata', ...projects.map((project) => project.id)],
+    () => [
+      'cover',
+      'biodata',
+      ...projects.map((project) => project.id),
+      'more-projects',
+    ],
     [],
   )
 
@@ -165,6 +170,11 @@ export function PortfolioDeck() {
           setSlideRef={setSlideRef}
         />
       ))}
+      <OutroSlide
+        slideIndex={totalSlides - 1}
+        setSlideRef={setSlideRef}
+        lang={lang}
+      />
 
       <SlideNavigation
         activeSlide={activeSlide}
@@ -534,33 +544,71 @@ function SlideNavigation({
   )
 }
 
+type OutroSlideProps = {
+  slideIndex: number
+  lang: Lang
+  setSlideRef: (index: number) => (node: HTMLElement | null) => void
+}
+
+function OutroSlide({ slideIndex, lang, setSlideRef }: OutroSlideProps) {
+  const reduceMotion = useReducedMotion()
+
+  return (
+    <section
+      ref={setSlideRef(slideIndex)}
+      id="more-projects"
+      className="slide outro-slide"
+      data-slide-index={slideIndex}
+      aria-label="More Projects"
+    >
+      <div className="slide-inner outro-inner">
+        <motion.div
+          className="outro-content"
+          initial={reduceMotion ? false : { opacity: 0, scale: 0.94 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: reduceMotion ? 0 : 0.45, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <a
+            href="https://github.com/jmahiswara1?tab=repositories"
+            target="_blank"
+            rel="noreferrer"
+            className="more-projects-btn"
+          >
+            <span>{uiStrings[lang].moreProjectsBtn}</span>
+            <ArrowUpRight size={24} weight="bold" aria-hidden="true" />
+          </a>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
 type LanguageSwitcherProps = {
   lang: Lang
   onToggle: (lang: Lang) => void
 }
 
 function LanguageSwitcher({ lang, onToggle }: LanguageSwitcherProps) {
+  const nextLang = lang === 'en' ? 'id' : 'en'
+
   return (
-    <nav className="lang-switcher" aria-label="Language selection">
-      <button
-        type="button"
-        className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
-        onClick={() => onToggle('en')}
-        aria-pressed={lang === 'en'}
-      >
-        EN
-      </button>
-      <span className="lang-divider" aria-hidden="true">
-        /
-      </span>
-      <button
-        type="button"
-        className={`lang-btn ${lang === 'id' ? 'active' : ''}`}
-        onClick={() => onToggle('id')}
-        aria-pressed={lang === 'id'}
-      >
-        ID
-      </button>
-    </nav>
+    <button
+      type="button"
+      className="lang-toggle"
+      onClick={() => onToggle(nextLang)}
+      title={
+        lang === 'en'
+          ? 'Switch language to Indonesian'
+          : 'Ganti bahasa ke English'
+      }
+      aria-label={
+        lang === 'en'
+          ? 'Current language: English. Click to switch to Indonesian'
+          : 'Bahasa saat ini: Indonesia. Klik untuk beralih ke Bahasa Inggris'
+      }
+    >
+      <span>{lang.toUpperCase()}</span>
+    </button>
   )
 }
