@@ -8,6 +8,11 @@
   color: var(--ink);
 }
 
+.deck-locked {
+  overflow-y: hidden !important;
+  scroll-snap-type: none !important;
+}
+
 .slide {
   position: relative;
   min-height: 100dvh;
@@ -53,6 +58,7 @@
   display: grid;
   place-items: center;
   min-height: min(62dvh, 560px);
+  overflow: visible;
 }
 
 .poster-title {

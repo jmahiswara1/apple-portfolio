@@ -12,7 +12,7 @@ import {
   Student,
   UserCircle,
 } from '@phosphor-icons/react'
-import { motion, useReducedMotion } from 'motion/react'
+import { motion, useReducedMotion, type Variants } from 'motion/react'
 import {
   profile,
   projects,
@@ -26,16 +26,12 @@ type SlideProps = {
   setSlideRef: (index: number) => (node: HTMLElement | null) => void
 }
 
-const reveal = {
-  hidden: { opacity: 0, y: 28 },
-  show: { opacity: 1, y: 0 },
-}
-
 export function PortfolioDeck() {
   const deckRef = useRef<HTMLElement | null>(null)
   const slideRefs = useRef<(HTMLElement | null)[]>([])
   const reduceMotion = useReducedMotion()
   const [activeSlide, setActiveSlide] = useState(0)
+  const [isIntroComplete, setIsIntroComplete] = useState(() => Boolean(reduceMotion))
   const [lang, setLang] = useState<Lang>(() => {
     try {
       const saved = localStorage.getItem('portfolio_lang')
@@ -88,6 +84,15 @@ export function PortfolioDeck() {
   }, [activeSlide, goToSlide, totalSlides])
 
   useEffect(() => {
+    if (reduceMotion) return
+
+    const timer = setTimeout(() => {
+      setIsIntroComplete(true)
+    }, 1800)
+    return () => clearTimeout(timer)
+  }, [reduceMotion])
+
+  useEffect(() => {
     const root = deckRef.current
 
     if (!root) return
@@ -123,6 +128,8 @@ export function PortfolioDeck() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isIntroComplete) return
+
       const nextKeys = ['ArrowDown', 'PageDown']
       const previousKeys = ['ArrowUp', 'PageUp']
 
@@ -150,16 +157,25 @@ export function PortfolioDeck() {
     window.addEventListener('keydown', handleKeyDown)
 
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [activeSlide, goToSlide, totalSlides])
+  }, [activeSlide, goToSlide, isIntroComplete, totalSlides])
 
   return (
     <main
       ref={deckRef}
-      className="deck"
+      className={`deck ${!isIntroComplete ? 'deck-locked' : ''}`}
       aria-label="Apple Developer Academy portfolio slides"
     >
-      <LanguageSwitcher lang={lang} onToggle={toggleLang} />
-      <HeroSlide setSlideRef={setSlideRef} lang={lang} />
+      <LanguageSwitcher
+        lang={lang}
+        visible={isIntroComplete}
+        onToggle={toggleLang}
+      />
+      <HeroSlide
+        setSlideRef={setSlideRef}
+        lang={lang}
+        isIntroComplete={isIntroComplete}
+        onIntroComplete={() => setIsIntroComplete(true)}
+      />
       <BioSlide setSlideRef={setSlideRef} lang={lang} />
       {projects.map((project, index) => (
         <ProjectSlide
@@ -181,13 +197,94 @@ export function PortfolioDeck() {
         totalSlides={totalSlides}
         currentSlideId={slideIds[activeSlide]}
         lang={lang}
+        visible={isIntroComplete}
         onNext={goToNextSlide}
       />
     </main>
   )
 }
 
-function HeroSlide({ setSlideRef }: SlideProps) {
+type HeroSlideProps = {
+  setSlideRef: (index: number) => (node: HTMLElement | null) => void
+  lang: Lang
+  isIntroComplete: boolean
+  onIntroComplete: () => void
+}
+
+const personalVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    x: '-70%',
+  },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.75,
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+}
+
+const portfolioVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    x: '70%',
+  },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.75,
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+}
+
+const stampVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    scale: 2.3,
+    rotate: -9,
+    x: '-50%',
+    y: '-50%',
+  },
+  show: {
+    opacity: 1,
+    scale: 1,
+    rotate: -2.5,
+    x: '-50%',
+    y: '-50%',
+    transition: {
+      delay: 0.68,
+      duration: 0.42,
+      type: 'spring' as const,
+      stiffness: 280,
+      damping: 18,
+    },
+  },
+}
+
+const namePillVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: -18,
+  },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.42,
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+}
+
+function HeroSlide({
+  setSlideRef,
+  isIntroComplete,
+  onIntroComplete,
+}: HeroSlideProps) {
   const reduceMotion = useReducedMotion()
 
   return (
@@ -198,31 +295,52 @@ function HeroSlide({ setSlideRef }: SlideProps) {
       data-slide-index="0"
       aria-label="Portfolio cover"
     >
-      <motion.div
-        className="hero-frame"
-        initial={reduceMotion ? false : 'hidden'}
-        animate="show"
-        transition={{ staggerChildren: reduceMotion ? 0 : 0.08 }}
-      >
-        <motion.p className="name-pill" variants={reveal}>
+      <div className="hero-frame">
+        <motion.p
+          className="name-pill"
+          initial={reduceMotion ? false : 'hidden'}
+          animate={isIntroComplete ? 'show' : 'hidden'}
+          variants={namePillVariants}
+        >
           {profile.fullName.toUpperCase()}
         </motion.p>
 
-        <motion.div className="poster-lockup" variants={reveal}>
+        <div className="poster-lockup">
           <h1
             className="poster-title"
             aria-label="Personal portfolio for Apple Developer Academy"
           >
-            <span className="poster-line poster-line-blue">PERSONAL</span>
-            <span className="academy-stamp" aria-hidden="true">
+            <motion.span
+              className="poster-line poster-line-blue"
+              initial={reduceMotion ? false : 'hidden'}
+              animate="show"
+              variants={personalVariants}
+            >
+              PERSONAL
+            </motion.span>
+            <motion.span
+              className="academy-stamp"
+              aria-hidden="true"
+              initial={reduceMotion ? false : 'hidden'}
+              animate="show"
+              variants={stampVariants}
+              onAnimationComplete={onIntroComplete}
+            >
               <span>APPLE</span>
               <span>DEVELOPER</span>
               <span>ACADEMY</span>
-            </span>
-            <span className="poster-line">PORTFOLIO</span>
+            </motion.span>
+            <motion.span
+              className="poster-line"
+              initial={reduceMotion ? false : 'hidden'}
+              animate="show"
+              variants={portfolioVariants}
+            >
+              PORTFOLIO
+            </motion.span>
           </h1>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </section>
   )
 }
@@ -509,6 +627,7 @@ type SlideNavigationProps = {
   totalSlides: number
   currentSlideId: string
   lang: Lang
+  visible?: boolean
   onNext: () => void
 }
 
@@ -517,12 +636,20 @@ function SlideNavigation({
   totalSlides,
   currentSlideId,
   lang,
+  visible = true,
   onNext,
 }: SlideNavigationProps) {
   const isLastSlide = activeSlide === totalSlides - 1
 
   return (
-    <div className="slide-navigation" aria-label="Slide navigation">
+    <motion.div
+      className="slide-navigation"
+      aria-label="Slide navigation"
+      initial={false}
+      animate={visible ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      style={{ pointerEvents: visible ? 'auto' : 'none' }}
+    >
       <span className="sr-only" aria-live="polite">
         {uiStrings[lang].currentSlide} {activeSlide + 1} {uiStrings[lang].of}{' '}
         {totalSlides}: {currentSlideId}
@@ -540,7 +667,7 @@ function SlideNavigation({
       >
         <ArrowUpRight size={29} weight="regular" aria-hidden="true" />
       </button>
-    </div>
+    </motion.div>
   )
 }
 
@@ -586,17 +713,26 @@ function OutroSlide({ slideIndex, lang, setSlideRef }: OutroSlideProps) {
 
 type LanguageSwitcherProps = {
   lang: Lang
+  visible?: boolean
   onToggle: (lang: Lang) => void
 }
 
-function LanguageSwitcher({ lang, onToggle }: LanguageSwitcherProps) {
+function LanguageSwitcher({
+  lang,
+  visible = true,
+  onToggle,
+}: LanguageSwitcherProps) {
   const nextLang = lang === 'en' ? 'id' : 'en'
 
   return (
-    <button
+    <motion.button
       type="button"
       className="lang-toggle"
       onClick={() => onToggle(nextLang)}
+      initial={false}
+      animate={visible ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      style={{ pointerEvents: visible ? 'auto' : 'none' }}
       title={
         lang === 'en'
           ? 'Switch language to Indonesian'
@@ -609,6 +745,6 @@ function LanguageSwitcher({ lang, onToggle }: LanguageSwitcherProps) {
       }
     >
       <span>{lang.toUpperCase()}</span>
-    </button>
+    </motion.button>
   )
 }
