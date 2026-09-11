@@ -1,0 +1,52 @@
+@import 'tailwindcss';
+
+:root {
+  --surface: #f4f5f3;
+  --ink: #171d24;
+  --muted: #6f7680;
+  --accent: #347fcf;
+  --font-display: 'Bebas Neue', 'Arial Narrow', Arial, sans-serif;
+  --font-sans: 'Space Grotesk Variable', 'Arial Narrow', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', Consolas, monospace;
+
+  color: var(--ink);
+  background: var(--surface);
+  font-family: var(--font-sans);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--surface);
+}
+
+button,
+a {
+  font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 72%, var(--surface));
+  outline-offset: 4px;
+}
+
+::selection {
+  color: var(--surface);
+  background: var(--accent);
+}
