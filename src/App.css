@@ -356,13 +356,24 @@
 
 .project-media {
   width: 100%;
-  aspect-ratio: 16 / 10.8;
-  background-image: url('/assets/project-collage.png');
-  background-repeat: no-repeat;
-  background-position: var(--media-position);
-  background-size: 218%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: 8px;
   border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
   box-shadow: 0 18px 42px color-mix(in srgb, var(--ink) 10%, transparent);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+}
+
+.project-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 320ms ease;
+}
+
+.project-media:hover .project-image {
+  transform: scale(1.02);
 }
 
 .contact-strip {
@@ -600,8 +611,8 @@
 
   .project-media {
     order: -1;
-    aspect-ratio: 16 / 8.8;
-    max-height: 230px;
+    aspect-ratio: 3 / 2;
+    max-height: 240px;
   }
 
   .contact-strip {

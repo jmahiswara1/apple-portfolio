@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowUpRight,
@@ -20,10 +20,6 @@ import {
   type Lang,
   type Project,
 } from '../data/portfolio'
-
-type MediaStyle = CSSProperties & {
-  '--media-position': string
-}
 
 type SlideProps = {
   lang: Lang
@@ -350,9 +346,6 @@ function ProjectSlide({
   setSlideRef,
 }: ProjectSlideProps) {
   const reduceMotion = useReducedMotion()
-  const mediaStyle: MediaStyle = {
-    '--media-position': project.mediaPosition,
-  }
   const isImageLeft = project.layout === 'image-left'
 
   return (
@@ -402,9 +395,6 @@ function ProjectSlide({
 
           <motion.div
             className="project-media"
-            style={mediaStyle}
-            role="img"
-            aria-label={`Placeholder visual for ${project.titleLead} ${project.titleAccent}`}
             initial={reduceMotion ? false : { opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, amount: 0.35 }}
@@ -413,7 +403,16 @@ function ProjectSlide({
               delay: reduceMotion ? 0 : 0.05,
               ease: [0.16, 1, 0.3, 1],
             }}
-          />
+          >
+            <img
+              src={project.image}
+              alt={`${project.titleLead} ${project.titleAccent}`}
+              className="project-image"
+              loading="lazy"
+              width={1500}
+              height={1000}
+            />
+          </motion.div>
         </div>
 
         <ContactStrip lang={lang} />

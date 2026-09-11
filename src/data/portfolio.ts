@@ -30,7 +30,7 @@ export type Project = {
   publicationLabel: LocalizedString
   publicationUrl: string
   layout: 'image-right' | 'image-left'
-  mediaPosition: string
+  image: string
 }
 
 export const uiStrings = {
@@ -127,12 +127,12 @@ export const projects: Project[] = [
     },
     publicationUrl: 'github.com/jmahiswara1/MediFlow',
     layout: 'image-right',
-    mediaPosition: '0% 0%',
+    image: '/assets/projects/mediflow.webp',
   },
   {
     id: 'bki-rag-chatbot',
-    titleLead: 'BKI',
-    titleAccent: 'RAG CHATBOT',
+    titleLead: 'BKI RAG',
+    titleAccent: 'CHATBOT',
     role: 'GEN AI ENGINEER (SOLO PROJECT)',
     date: {
       en: 'April – July 2026',
@@ -148,7 +148,7 @@ export const projects: Project[] = [
     },
     publicationUrl: 'github.com/jmahiswara1/bki-rag-chatbot',
     layout: 'image-left',
-    mediaPosition: '100% 0%',
+    image: '/assets/projects/bki-rag-chatbot.webp',
   },
   {
     id: 'karsa',
@@ -169,7 +169,7 @@ export const projects: Project[] = [
     },
     publicationUrl: 'github.com/jmahiswara1/Karsa',
     layout: 'image-right',
-    mediaPosition: '0% 100%',
+    image: '/assets/projects/karsa.webp',
   },
   {
     id: 'minexia-optimize',
@@ -190,7 +190,7 @@ export const projects: Project[] = [
     },
     publicationUrl: 'github.com/jmahiswara1/minexia-optimize',
     layout: 'image-left',
-    mediaPosition: '50% 100%',
+    image: '/assets/projects/minexia-optimize.webp',
   },
   {
     id: 'ticketin-platform',
@@ -211,6 +211,6 @@ export const projects: Project[] = [
     },
     publicationUrl: 'github.com/jmahiswara1/TicketIn',
     layout: 'image-right',
-    mediaPosition: '100% 100%',
+    image: '/assets/projects/ticketin-platform.webp',
   },
 ]
